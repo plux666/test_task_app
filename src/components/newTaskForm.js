@@ -2,6 +2,12 @@ import React from 'react';
 import { Card, Input, TextArea, Button } from 'semantic-ui-react';
 import { DateTimeInput } from 'semantic-ui-calendar-react';
 import TaskForm from './taskForm.js'
+import moment from 'moment';
+import alertify from 'alertifyjs'
+
+
+const dateFormat = 'DD-MM-YYYY hh:mm'
+
 
 export default class NewTaskForm extends React.Component {
 
@@ -22,6 +28,8 @@ export default class NewTaskForm extends React.Component {
   }
 
   toggleForm(e) {
+    e.stopPropagation()
+    
     this.setState({
       show: !this.state.show,
       name: '',
@@ -30,8 +38,21 @@ export default class NewTaskForm extends React.Component {
     })
   }
 
-  handleDateChange(e, {name, value}) {
-    this.setState({deadline: value})
+  handleDateChange = (e) => {
+    let value = e.target.value;
+
+    if (moment(value, dateFormat).format(dateFormat) !== 'Invalid date') {
+      this.setState({
+        deadline: value
+      })
+    } else if (value.split('_').length === 1) {
+      console.log('wrong date')
+      alertify.notify("Неправильная дата", "error", 10)
+    } else {
+      this.setState({
+        deadline: value
+      })
+    }
   }
 
   handleInputChange(e) {
@@ -46,15 +67,15 @@ export default class NewTaskForm extends React.Component {
   submit(info) {
     // parse date string to create Date object
     // govnokod c:
-    let deadline;
-    if (this.state.deadline) {
-      let date = this.state.deadline.split(' ')[0];
-      let time = this.state.deadline.split(' ')[1];
-      let [day, mon, yr] = [...date.split('-')];
-      mon = mon - 1;
-      let [min, sec] = [...time.split(':')];
+    let deadline = moment(this.state.deadline, dateFormat).format();
+    deadline = new Date(deadline);
 
-      deadline = new Date(yr, mon, day, min);
+    if (this.state.name.length === 0) {
+      alertify.notify('Заполните назание')
+      return
+    } else if (deadline === 'Invalid date') {
+      alertify.notify('Неправильная дата', 'error', 10)
+      return
     }
 
     this.props.addNewTask({

@@ -1,8 +1,13 @@
 import React from 'react';
-import { Card, Input, TextArea, Button, Form } from 'semantic-ui-react';
+import { Card, Input, TextArea, Button, Form, Icon } from 'semantic-ui-react';
 import { DateTimeInput } from 'semantic-ui-calendar-react';
+import MaskedInput from 'react-maskedinput';
+import moment from 'moment';
+
 
 export default function TaskForm(props) {
+
+  let date = props.deadline;
 
   return(
     <div className='task-cell'>
@@ -16,13 +21,12 @@ export default function TaskForm(props) {
               value={props.name}></Input>
           </Card.Header>
           <Card.Meta>
-            <DateTimeInput
+            <MaskedInput
                 name="dateTime"
-                placeholder="Date Time"
-                value={props.deadline}
-                iconPosition="left"
-                onChange={props.handleDateChange}
-              />
+                mask={'11-11-1111 11:11'}
+                value={date}
+                onChange={props.handleDateChange}>
+              </MaskedInput>
           </Card.Meta>
           <Card.Description>
             <Form>

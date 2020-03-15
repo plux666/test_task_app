@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { Card, Icon, Image, Button, Checkbox } from 'semantic-ui-react';
 import TaskForm from './taskForm.js';
+import moment from 'moment'
+import alertify from 'alertifyjs'
+
+
+const dateFormat = 'DD-MM-YYYY hh:mm'
 
 
 export default class SmallTask extends React.Component {
@@ -11,27 +16,53 @@ export default class SmallTask extends React.Component {
     this.state = {
       edit: false,
       fullView: false,
-      name: this.props.info.name,
-      deadline: this.props.info.deadline,
-      description: this.props.info.description
     };
-
-    this.toggleComplete = this.toggleComplete.bind(this);
-    this.toggleEdit = this.toggleEdit.bind(this);
-    this.handleDateChange = this.handleDateChange.bind(this);
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.submit = this.submit.bind(this);
   }
 
-  toggleEdit() {
+  componentDidMount() {
+    this.setState({
+      name: this.props.info.name,
+      deadline: moment(this.props.info.deadline, dateFormat).format(dateFormat),
+      description: this.props.info.description
+    })
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.info != prevProps.info) {
+      this.setState({
+        name: this.props.info.name,
+        deadline: moment(this.props.info.deadline, dateFormat).format(dateFormat),
+        description: this.props.info.description
+      })
+    }
+  }
+
+  toggleEdit = (e) => {
+    e.stopPropagation()
+    
     this.setState({edit: !this.state.edit})
   }
 
-  handleDateChange(e, {name, value}) {
-    this.setState({deadline: value})
+  handleDateChange = (e) => {
+    let value = e.target.value;
+
+    if (moment(value, dateFormat).format(dateFormat) !== 'Invalid date') {
+      this.setState({
+        deadline: value
+      })
+    } else if (value.split('_').length === 1) {
+      console.log('wrong date')
+      alertify.notify("Неправильная дата", "error", 10)
+    } else {
+      this.setState({
+        deadline: value
+      })
+    }
   }
 
-  handleInputChange(e) {
+  handleInputChange = (e) => {
+    e.stopPropagation()
+
     const name = e.target.name;
     const val = e.target.value;
 
@@ -40,19 +71,12 @@ export default class SmallTask extends React.Component {
     });
   }
 
-  submit(info) {
-    // parse date string to create Date object
-    // govnokod c:
-    let deadline = this.props.info.deadline;
-    if (this.state.deadline != this.props.info.deadline) {
-      let date = this.state.deadline.split(' ')[0];
-      let time = this.state.deadline.split(' ')[1];
-      let [day, mon, yr] = [...date.split('-')];
-      mon = mon - 1;
-      let [min, sec] = [...time.split(':')];
+  submit = (info) => {
 
-      deadline = new Date(yr, mon, day, min);
-    }
+    console.log(this.state.deadline, dateFormat)
+    let deadline = moment(this.state.deadline, dateFormat).format();
+    console.log(deadline)
+    deadline = new Date(deadline);
 
     this.props.changeTask({
       name: this.state.name,
@@ -62,9 +86,12 @@ export default class SmallTask extends React.Component {
       complete: this.props.info.complete
     })
     this.toggleEdit()
+    this.setState({fullView: false})
   }
 
-  toggleComplete(e) {
+  toggleComplete = (e) => {
+    e.stopPropagation()
+
     this.props.changeTask({
       name: this.props.info.name,
       description: this.props.info.description,
@@ -72,6 +99,11 @@ export default class SmallTask extends React.Component {
       id: this.props.info.id,
       complete: !this.props.info.complete
     })
+  }
+
+  delete = (e) => {
+    e.stopPropagation()
+    this.setState({fullView: false}, this.props.delete(this.props.info.id))
   }
 
   render() {
@@ -84,14 +116,17 @@ export default class SmallTask extends React.Component {
       let descPreview = '';
       if (this.props.info.description.length > 40 & !this.state.fullView) {
         descPreview = this.props.info.description.slice(0, 40) + '...'
-        console.log(descPreview)
       } else {
         descPreview = this.props.info.description;
       }
+
+      let date = moment(this.props.info.deadline, dateFormat).format('DD-MM-YYYY hh:mm');
+
       return(
         <div id={this.props.info.id} className={this.state.fullView ? 'task-full-view' : 'task-cell'}
           draggable='true'
-          onDragEnd={(e) => {e.persist();console.log(e)}}>
+          onDragEnd={(e) => {e.persist();console.log(e)}}
+          onClick={()=>{this.setState({fullView: !this.state.fullView})}}>
           <div className='s-ovl'>
             <div className={this.props.info.complete ? 'complete-overlay' : ''}></div>
             <Card color={color}>
@@ -99,7 +134,7 @@ export default class SmallTask extends React.Component {
                 <Card.Header>{this.props.info.name}</Card.Header>
                 <Card.Meta>
                   <span className='date'>
-                    {`${this.props.info.deadline.getFullYear()}-${this.props.info.deadline.getMonth()}-${this.props.info.deadline.getDate()}`}
+                    {date}
                   </span>
                 </Card.Meta>
                 <Card.Description>
@@ -114,7 +149,6 @@ export default class SmallTask extends React.Component {
                   {this.props.info.complete ? "Выполнено" : 'Завершить'}
                 </label>
                 <Checkbox toggle
-                  value={this.props.info.complete}
                   defaultChecked={this.props.info.complete}
                   onChange={this.toggleComplete}
                   >
@@ -131,7 +165,7 @@ export default class SmallTask extends React.Component {
                   <Button
                     basic
                     color='red'
-                    onClick={() => {this.props.delete(this.props.info.id)}}>
+                    onClick={this.delete}>
                     Удалить
                   </Button>
                 </Button.Group>
