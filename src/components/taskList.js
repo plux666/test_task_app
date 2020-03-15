@@ -42,8 +42,6 @@ class TaskList extends React.Component {
     e.preventDefault();
     if (e.type == 'drop') {
       e.persist();
-      console.log(i);
-      console.log(e)
     }
   }
 

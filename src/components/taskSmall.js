@@ -39,7 +39,7 @@ export default class SmallTask extends React.Component {
 
   toggleEdit = (e) => {
     e.stopPropagation()
-    
+
     this.setState({edit: !this.state.edit})
   }
 
@@ -51,7 +51,6 @@ export default class SmallTask extends React.Component {
         deadline: value
       })
     } else if (value.split('_').length === 1) {
-      console.log('wrong date')
       alertify.notify("Неправильная дата", "error", 10)
     } else {
       this.setState({
@@ -73,9 +72,7 @@ export default class SmallTask extends React.Component {
 
   submit = (info) => {
 
-    console.log(this.state.deadline, dateFormat)
     let deadline = moment(this.state.deadline, dateFormat).format();
-    console.log(deadline)
     deadline = new Date(deadline);
 
     this.props.changeTask({

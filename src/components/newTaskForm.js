@@ -29,7 +29,7 @@ export default class NewTaskForm extends React.Component {
 
   toggleForm(e) {
     e.stopPropagation()
-    
+
     this.setState({
       show: !this.state.show,
       name: '',
@@ -46,7 +46,6 @@ export default class NewTaskForm extends React.Component {
         deadline: value
       })
     } else if (value.split('_').length === 1) {
-      console.log('wrong date')
       alertify.notify("Неправильная дата", "error", 10)
     } else {
       this.setState({

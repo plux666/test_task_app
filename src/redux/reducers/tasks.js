@@ -37,7 +37,6 @@ export function tasks(state, action) {
   if (typeof state === 'undefined') {
     return initialState
   }
-  console.log(state);
 
   if (action.type == ADD_TASK) {
     let newState = Object.assign({}, state);
