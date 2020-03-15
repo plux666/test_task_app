@@ -5,7 +5,7 @@ import { deleteTask, changeTask } from './../acts/acts.js'
 
 const mapStateToProps = (state, ownProps) => {
   let task = state.tasks.filter(v => {
-    if (v.id == ownProps.id) {
+    if (v.id === ownProps.id) {
       return v
     }
   })[0]

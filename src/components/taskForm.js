@@ -1,8 +1,6 @@
 import React from 'react';
-import { Card, Input, TextArea, Button, Form, Icon } from 'semantic-ui-react';
-import { DateTimeInput } from 'semantic-ui-calendar-react';
+import { Card, Input, TextArea, Button, Form} from 'semantic-ui-react';
 import MaskedInput from 'react-maskedinput';
-import moment from 'moment';
 
 
 export default function TaskForm(props) {

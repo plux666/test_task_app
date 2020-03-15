@@ -41,3 +41,7 @@ body {
 }
 .drop-cont {
 }
+.task-list {
+  height: 100vh;
+  overflow-y: scroll;
+}

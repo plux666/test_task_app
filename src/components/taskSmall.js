@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Card, Icon, Image, Button, Checkbox } from 'semantic-ui-react';
+import React from 'react';
+import { Card, Button, Checkbox } from 'semantic-ui-react';
 import TaskForm from './taskForm.js';
 import moment from 'moment'
 import alertify from 'alertifyjs'
@@ -28,7 +28,7 @@ export default class SmallTask extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.info != prevProps.info) {
+    if (this.props.info !== prevProps.info) {
       this.setState({
         name: this.props.info.name,
         deadline: moment(this.props.info.deadline, dateFormat).format(dateFormat),
@@ -37,8 +37,10 @@ export default class SmallTask extends React.Component {
     }
   }
 
-  toggleEdit = (e) => {
-    e.stopPropagation()
+  toggleEdit = (e=null) => {
+    if (e) {
+      e.stopPropagation()
+    }
 
     this.setState({edit: !this.state.edit})
   }
@@ -52,6 +54,9 @@ export default class SmallTask extends React.Component {
       })
     } else if (value.split('_').length === 1) {
       alertify.notify("Неправильная дата", "error", 10)
+      this.setState({
+        deadline: value
+      })
     } else {
       this.setState({
         deadline: value
@@ -70,10 +75,43 @@ export default class SmallTask extends React.Component {
     });
   }
 
+  _validateDate(deadline) {
+    if (Object.prototype.toString.call(deadline) === "[object Date]") {
+      if (isNaN(deadline.getTime())) {
+        alertify.notify('Заполните срок в правильном формате:\n' +
+                        'дд-мм-гггг чч:мм', 'error', 5)
+        return false
+      }
+    } else {
+      alertify.notify('Заполните в правильном формате:\n' +
+                      'дд-мм-гггг чч:мм', 'error', 5)
+      return false
+    }
+
+    return true
+  }
+
+  _validateName(name) {
+    if (name.length === 0) {
+      alertify.notify('Заполните название', 'warning', 10)
+      return false
+    }
+
+    return true
+  }
+
   submit = (info) => {
 
     let deadline = moment(this.state.deadline, dateFormat).format();
     deadline = new Date(deadline);
+
+    if (!this._validateDate(deadline)) {
+      return
+    }
+
+    if (!this._validateName(this.state.name)) {
+      return
+    }
 
     this.props.changeTask({
       name: this.state.name,
@@ -86,9 +124,10 @@ export default class SmallTask extends React.Component {
     this.setState({fullView: false})
   }
 
-  toggleComplete = (e) => {
-    e.stopPropagation()
-
+  toggleComplete = (e=null) => {
+    if (e) {
+      e.stopPropagation()
+    }
     this.props.changeTask({
       name: this.props.info.name,
       description: this.props.info.description,
@@ -98,8 +137,11 @@ export default class SmallTask extends React.Component {
     })
   }
 
-  delete = (e) => {
-    e.stopPropagation()
+  delete = (e=null) => {
+    if (e) {
+      e.stopPropagation()
+    }
+
     this.setState({fullView: false}, this.props.delete(this.props.info.id))
   }
 
@@ -122,7 +164,6 @@ export default class SmallTask extends React.Component {
       return(
         <div id={this.props.info.id} className={this.state.fullView ? 'task-full-view' : 'task-cell'}
           draggable='true'
-          onDragEnd={(e) => {e.persist();console.log(e)}}
           onClick={()=>{this.setState({fullView: !this.state.fullView})}}>
           <div className='s-ovl'>
             <div className={this.props.info.complete ? 'complete-overlay' : ''}></div>
@@ -170,7 +211,7 @@ export default class SmallTask extends React.Component {
             </Card>
           </div>
         </div>
-        )
+      )
     } else {
       return(
           <TaskForm

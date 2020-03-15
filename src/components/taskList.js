@@ -1,7 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import SmallTask from '../redux/containers/taskSmallCont.js';
-import { Button } from 'semantic-ui-react';
 import NewTaskForm from './newTaskForm.js'
 
 
@@ -23,8 +21,11 @@ class TaskList extends React.Component {
     let tasks = this.props.tasks.sort((a, b) => {
       if (a.showIndex < b.showIndex) {
         return -1
+      } else {
+        return 0
       }
     });
+
     return tasks.map((v, i, a) => {
       return(
         <div id={i}
@@ -40,7 +41,7 @@ class TaskList extends React.Component {
 
   dropTask(e, i) {
     e.preventDefault();
-    if (e.type == 'drop') {
+    if (e.type === 'drop') {
       e.persist();
     }
   }
@@ -57,7 +58,7 @@ class TaskList extends React.Component {
 
   render() {
     return(
-      <div>
+      <div className='task-list'>
         таски:
         {this._mapTasks()}
         <NewTaskForm addNewTask={this.add}></NewTaskForm>
