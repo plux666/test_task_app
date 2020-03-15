@@ -8,7 +8,7 @@ import './alertify.css'
 import { Provider } from "react-redux";
 import { tasks } from './redux/reducers/tasks.js';
 
-const store = createStore(tasks)
+const store = createStore(tasks, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
 
 ReactDOM.render(
   <Provider store={store}>

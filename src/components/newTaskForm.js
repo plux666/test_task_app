@@ -118,7 +118,8 @@ export default class NewTaskForm extends React.Component {
             name={this.state.name}
             deadline={this.state.deadline}
             description={this.state.description}
-            cancel={this.toggleForm}></TaskForm>
+            cancel={this.toggleForm}>
+          </TaskForm>
         </div>
       )
     } else {

@@ -26,14 +26,16 @@ class TaskList extends React.Component {
       }
     });
 
+    console.log(tasks);
+
     return tasks.map((v, i, a) => {
       return(
         <div id={i}
-          key={'f'+i}
+          key={'f'+v.id}
           onDrop={(e) => {this.dropTask(e, i)}}
           onDragOver={this.dropTask}
           className='drop-cont'>
-          <SmallTask key={i} id={v.id} delete={this.delete}></SmallTask>
+          <SmallTask key={v.id} id={v.id} delete={this.delete}></SmallTask>
         </div>
       )
     })
