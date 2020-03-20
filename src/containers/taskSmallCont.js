@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
-import TaskSmall from './../../components/taskSmall.js'
-import { deleteTask, changeTask } from './../acts/acts.js'
+import TaskSmall from './../components/taskSmall.js'
+import { deleteTask, changeTask } from './../redux/acts/acts.js'
 
 
 const mapStateToProps = (state, ownProps) => {
@@ -9,7 +9,6 @@ const mapStateToProps = (state, ownProps) => {
       return v
     }
   })[0]
-
   return {
     info: task,
   }

@@ -1,5 +1,5 @@
 import React from 'react';
-import SmallTask from '../redux/containers/taskSmallCont.js';
+import SmallTask from '../containers/taskSmallCont.js';
 import NewTaskForm from './newTaskForm.js'
 
 
@@ -11,13 +11,10 @@ class TaskList extends React.Component {
     this.state = {
       showForm: false
     }
-    this.dropTask = this.dropTask.bind(this);
-    this._mapTasks = this._mapTasks.bind(this);
-    this.add = this.add.bind(this);
-    this.delete = this.delete.bind(this);
   }
 
-  _mapTasks(){
+  _mapTasks = () => {
+    // creating array sorted on showIndex
     let tasks = this.props.tasks.sort((a, b) => {
       if (a.showIndex < b.showIndex) {
         return -1
@@ -26,14 +23,14 @@ class TaskList extends React.Component {
       }
     });
 
-    console.log(tasks);
 
     return tasks.map((v, i, a) => {
       return(
         <div id={i}
-          key={'f'+v.id}
+          key={'f' + v.id}
           onDrop={(e) => {this.dropTask(e, i)}}
           onDragOver={this.dropTask}
+          showind={v.showIndex}
           className='drop-cont'>
           <SmallTask key={v.id} id={v.id} delete={this.delete}></SmallTask>
         </div>
@@ -41,20 +38,23 @@ class TaskList extends React.Component {
     })
   }
 
-  dropTask(e, i) {
+  dropTask = (e, i) => {
     e.preventDefault();
     if (e.type === 'drop') {
       e.persist();
+      console.log(e.dataTransfer.getData("text/plain"))
+      console.log(i)
+      this.props.moveTask(e.dataTransfer.getData("text/plain"), i)
     }
   }
 
-  add(info) {
+  add = (info) => {
     this.props.addNewTask(
       info
     )
   }
 
-  delete(taskId) {
+  delete = (taskId) => {
     this.props.deleteTask(taskId)
   }
 

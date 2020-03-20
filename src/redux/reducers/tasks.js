@@ -1,4 +1,4 @@
-import { ADD_TASK, DELETE_TASK, CHANGE_TASK } from '../acts/acts.js';
+import { ADD_TASK, DELETE_TASK, CHANGE_TASK, MOVE_TASK } from '../acts/acts.js';
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -44,26 +44,35 @@ export function tasks(state, action) {
     let newState = Object.assign({}, state);
 
     let newInfo = Object.assign({}, action.info);
-    newInfo.id = uuidv4()
-    newInfo.showIndex = newState.tasks.length + 1;
-    newInfo.complete = false
+    newInfo.id = uuidv4();
+    newInfo.showIndex = newState.tasks.length;
+    newInfo.complete = false;
 
-    newState.tasks.push(newInfo)
-    newState.tasks = Array.from(newState.tasks)
+    newState.tasks.push(newInfo);
+    newState.tasks = Array.from(newState.tasks);
 
     return newState
   } else if (action.type === DELETE_TASK) {
     let newState = Object.assign({}, state);
 
-    let ind = newState.tasks.findIndex(v => {
+    let ind;
+
+    let deletedShowIndex = newState.tasks.filter((v, i, a) => {
       if (v.id === action.taskId) {
+        ind = i;
         return v
+      }
+    })[0].showIndex
+
+    newState.tasks.map(v => {
+      if (v.showIndex > deletedShowIndex) {
+        v.showIndex -= 1
       }
     })
 
-    let tasks = Array.from(newState.tasks)
-    tasks.splice(ind, 1)
-    newState.tasks = tasks
+    let tasks = Array.from(newState.tasks);
+    tasks.splice(ind, 1);
+    newState.tasks = tasks;
 
     return newState
   } else if (action.type === CHANGE_TASK) {
@@ -77,6 +86,46 @@ export function tasks(state, action) {
 
     let tasks = Array.from(newState.tasks);
     tasks[ind] = action.info;
+    newState.tasks = tasks;
+
+    return newState
+  } else if (action.type === MOVE_TASK) {
+    console.log(action)
+    let tasks = Array.from(state.tasks);
+
+    let movedTask = tasks.filter(v => {
+      return v.id === action.task
+    })
+
+    let prevShowIndex = movedTask[0].showIndex;
+
+    /* eslint-disable */
+    if (prevShowIndex > action.target) {
+      tasks.map((v, i, a) => {
+        if (v.id === action.task) {
+          v.showIndex = action.target
+        } else if ((prevShowIndex > v.showIndex) &&
+                    (v.showIndex >= action.target)) {
+          console.log(v.name)
+          console.log(v.showIndex)
+          v.showIndex += 1
+        }
+      })
+    } else if (prevShowIndex < action.target) {
+      tasks.map((v, i, a) => {
+        if (v.id === action.task) {
+          v.showIndex = action.target
+        } else if ((prevShowIndex < v.showIndex) &&
+                    (v.showIndex <= action.target)) {
+          console.log(v.name)
+          console.log(v.showIndex)
+          v.showIndex -= 1
+        }
+      })
+    }
+    /* eslint-enable */
+
+    let newState = Object.assign({}, state);
     newState.tasks = tasks;
 
     return newState

@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import TaskList from './redux/containers/taskListCont.js'
+import TaskList from './containers/taskListCont.js'
 
 function App() {
   return (

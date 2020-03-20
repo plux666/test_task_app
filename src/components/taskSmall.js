@@ -133,7 +133,8 @@ export default class SmallTask extends React.Component {
       description: this.props.info.description,
       deadline: this.props.info.deadline,
       id: this.props.info.id,
-      complete: !this.props.info.complete
+      complete: !this.props.info.complete,
+      showIndex: this.props.info.showIndex
     })
   }
 
@@ -164,6 +165,7 @@ export default class SmallTask extends React.Component {
       return(
         <div id={this.props.info.id} className={this.state.fullView ? 'task-full-view' : 'task-cell'}
           draggable='true'
+          onDragStart={(e)=>{e.dataTransfer.setData("text/plain", this.props.info.id)}}
           onClick={()=>{this.setState({fullView: !this.state.fullView})}}>
           <div className='s-ovl'>
             <div className={this.props.info.complete ? 'complete-overlay' : ''}></div>
