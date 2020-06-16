@@ -1,7 +1,15 @@
-import { ADD_TASK, DELETE_TASK, CHANGE_TASK, MOVE_TASK } from '../acts/acts.js';
+import { ADD_TASK, DELETE_TASK, CHANGE_TASK, MOVE_TASK } from '../acts/acts';
 import { v4 as uuidv4 } from 'uuid';
 
 
+export interface Task {
+  id: string,
+  deadline: any,
+  name: string,
+  description: string,
+  complete: boolean,
+  showIndex: number
+}
 // showIndex: index in which tasks must be shown, set by drag n dropTask
 // and saved on server
 const initialState = {
@@ -35,7 +43,7 @@ The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for t
   ]
 }
 
-export function tasks(state, action) {
+export function tasks(state:any, action:any) {
   if (typeof state === 'undefined') {
     return initialState
   }
@@ -55,16 +63,16 @@ export function tasks(state, action) {
   } else if (action.type === DELETE_TASK) {
     let newState = Object.assign({}, state);
 
-    let ind;
+    let ind:any;
 
-    let deletedShowIndex = newState.tasks.filter((v, i, a) => {
+    let deletedShowIndex = newState.tasks.filter((v:Task, i:number, a:Array<Task>) => {
       if (v.id === action.taskId) {
         ind = i;
         return v
       }
     })[0].showIndex
 
-    newState.tasks.map(v => {
+    newState.tasks.map((v:Task) => {
       if (v.showIndex > deletedShowIndex) {
         v.showIndex -= 1
       }
@@ -78,7 +86,7 @@ export function tasks(state, action) {
   } else if (action.type === CHANGE_TASK) {
     let newState = Object.assign({}, state);
 
-    let ind = newState.tasks.findIndex(v => {
+    let ind = newState.tasks.findIndex((v:Task) => {
       if (v.id === action.info.id) {
         return v
       }
@@ -90,11 +98,14 @@ export function tasks(state, action) {
 
     return newState
   } else if (action.type === MOVE_TASK) {
-    console.log(action)
-    let tasks = Array.from(state.tasks);
+    let tasks:Array<Task> = Array.from(state.tasks);
 
-    let movedTask = tasks.filter(v => {
-      return v.id === action.task
+    let movedTask:Array<Task> = tasks.filter((val:Task) => {
+      if (val.id === action.task) {
+        return true
+      } else {
+        return false
+      }
     })
 
     let prevShowIndex = movedTask[0].showIndex;
@@ -106,8 +117,6 @@ export function tasks(state, action) {
           v.showIndex = action.target
         } else if ((prevShowIndex > v.showIndex) &&
                     (v.showIndex >= action.target)) {
-          console.log(v.name)
-          console.log(v.showIndex)
           v.showIndex += 1
         }
       })
@@ -117,8 +126,6 @@ export function tasks(state, action) {
           v.showIndex = action.target
         } else if ((prevShowIndex < v.showIndex) &&
                     (v.showIndex <= action.target)) {
-          console.log(v.name)
-          console.log(v.showIndex)
           v.showIndex -= 1
         }
       })

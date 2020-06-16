@@ -1,9 +1,19 @@
-import React from 'react';
+import * as React from 'react';
 import { Card, Input, TextArea, Button, Form} from 'semantic-ui-react';
-import MaskedInput from 'react-maskedinput';
+import InputMask from "react-input-mask";
 
 
-export default function TaskForm(props) {
+export interface Props {
+  submit(info: object): any;
+  handleInputChange(e: object): any;
+  handleDateChange(e: any): any;
+  name: string;
+  deadline: string;
+  description: string;
+  cancel?(e: object): any;
+}
+
+const TaskForm : React.FC<Props> = (props: Props) => {
 
   let date = props.deadline;
 
@@ -19,12 +29,11 @@ export default function TaskForm(props) {
               value={props.name}></Input>
           </Card.Header>
           <Card.Meta>
-            <MaskedInput
-                name="dateTime"
-                mask={'11-11-1111 11:11'}
+            <InputMask
+                mask={'99-99-9999 99:99'}
                 value={date}
                 onChange={props.handleDateChange}>
-              </MaskedInput>
+            </InputMask>
           </Card.Meta>
           <Card.Description>
             <Form>
@@ -47,3 +56,5 @@ export default function TaskForm(props) {
     </div>
   )
 }
+
+export default TaskForm
